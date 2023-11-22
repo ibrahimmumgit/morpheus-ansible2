@@ -6,35 +6,51 @@
   become_user: root
   become_method: sudo
   tasks:
-  - set_fact:
-      userpass: "{{ lookup('cypher','secret=secret/userpass') }}"
+  # - set_fact:
+  #     userpass: "{{ lookup('cypher','secret=secret/userpass') }}"
 
-  - name: Add a user
-    user:
-      name: "{{ morpheus['customOptions']['username'] }}"
-      password: "{{ userpass }}"
-      state: present
+  # - name: Add a user
+  #   user:
+  #     name: "{{ morpheus['customOptions']['username'] }}"
+  #     password: "{{ userpass }}"
+  #     state: present
   
-  - debug:
-        msg: "{{ lookup('cypher','secret=secret/userpass') }}"
+  # - debug:
+  #       msg: "{{ lookup('cypher','secret=secret/userpass') }}"
 
-  - name: Make sure we have a 'wheel' group
-    group:
-      name: wheel
-      state: present
+  # - name: Make sure we have a 'wheel' group
+  #   group:
+  #     name: wheel
+  #     state: present
 
-  - name: Allow 'wheel' group to have passwordless sudo
-    lineinfile:
-      dest: /etc/sudoers
-      state: present
-      regexp: '^%wheel'
-      line: '%wheel ALL=(ALL) NOPASSWD: ALL'
+  # - name: Allow 'wheel' group to have passwordless sudo
+  #   lineinfile:
+  #     dest: /etc/sudoers
+  #     state: present
+  #     regexp: '^%wheel'
+  #     line: '%wheel ALL=(ALL) NOPASSWD: ALL'
       
   
-  - name: Add sudoers users to wheel group
-    user:
-      name: "{{ morpheus['customOptions']['username'] }}"
-      groups: wheel
-      append: yes
-      state: present
-      createhome: yes
+  # - name: Add sudoers users to wheel group
+  #   user:
+  #     name: "{{ morpheus['customOptions']['username'] }}"
+  #     groups: wheel
+  #     append: yes
+  #     state: present
+  #     createhome: yes
+    - set_fact:
+        userpass: "{{ morpheus['customOptions']['password'] }}"
+        username: "{{ morpheus['customOptions']['username'] }}"
+
+    - name: Add a user
+      user:
+        name: "{{ username }}"
+        password: "{{ userpass }}"
+        state: present    
+
+    - name: Add sudoers users to wheel group
+      user:
+        name: "{{ username }}"
+        groups: wheel
+        append: yes
+        state: present
